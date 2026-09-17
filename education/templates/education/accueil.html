@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathématiques CPGE - Plateforme</title>
+    <style>
+        /* Réinitialisation et fond de page */
+        body { 
+            margin: 0; 
+            overflow: hidden; /* Empêche le scroll */
+            background-color: #0b0c10; /* Fond très sombre */
+            color: #c5c6c7; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        
+        /* NOUVEAU : La barre d'en-tête qui contient les deux images */
+        .header-images {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between; /* Pousse la photo à gauche et le logo à droite */
+            align-items: flex-start;
+            box-sizing: border-box;
+            z-index: 20; /* S'assure que les images sont au-dessus de la 3D */
+            pointer-events: none; 
+        }
+
+        /* Style pour la photo du professeur */
+        .photo-prof {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%; /* Rend l'image parfaitement ronde */
+            object-fit: cover;
+            border: 3px solid #45a29e;
+            box-shadow: 0 0 15px rgba(69, 162, 158, 0.4);
+        }
+
+        /* Style pour le logo des classes préparatoires */
+        .logo-cpge {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(102, 252, 241, 0.3)); /* Ajoute un léger halo néon */
+        }
+
+        /* Conteneur du texte par-dessus la 3D */
+        #titre-container { 
+            position: absolute; 
+            top: 30%; 
+            width: 100%; 
+            text-align: center; 
+            z-index: 10; 
+            pointer-events: none; /* Le clic traverse ce conteneur... */
+        }
+
+        h1 { 
+            color: #66fcf1; 
+            font-size: 4rem; 
+            margin-bottom: 100px; 
+            text-shadow: 0 0 15px rgba(102, 252, 241, 0.4); 
+        }
+       .sous-titre { 
+    font-size: 1.2rem; /* Légèrement plus petit pour faire pro */
+    color: #45a29e; 
+    margin-top: 130px; /* Espace au-dessus du texte */
+}
+        /* Bouton d'accès aux cours */
+        .btn-entrer {
+            display: inline-block;
+            pointer-events: auto; /* ...sauf pour le bouton qui reste cliquable */
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            color: #0b0c10;
+            background-color: #66fcf1;
+            border: none;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-entrer:hover {
+            background-color: #45a29e;
+            color: white;
+            box-shadow: 0 0 20px #66fcf1;
+        }
+
+        #canvas-3d { 
+            width: 100vw; 
+            height: 100vh; 
+            display: block; 
+        }
+        #pluie-maths {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0; /* Place l'animation derrière tout le reste */
+    opacity: 10; /* Rend la pluie un peu transparente pour ne pas gêner la lecture */
+    pointer-events: none; /* Empêche la pluie de bloquer les clics de la souris */
+}
+    </style>
+</head>
+<body>
+<!-- Toile de fond pour la pluie de mathématiques -->
+<canvas id="pluie-maths"></canvas>
+<div class="header-images">
+        <img src="{% static 'images/photo_prof.jpg' %}" alt="Professeur de Mathématiques" class="photo-prof">
+        <img src="{% static 'images/logo_cpge.png' %}" alt="Logo CPGE" class="logo-cpge">
+    </div>
+    <!-- Interface Utilisateur -->
+    <div id="titre-container">
+        <h1>Mathématiques Sup & Spé</h1>
+        
+        <a href="{% url 'liste_cours' %}" class="btn-entrer">Consulter les Cours</a>
+        <p class="sous-titre">Cours, Résumés, et Sujets d'Entraînement</p>
+    </div>
+    
+    <!-- Zone où la 3D sera dessinée -->
+    <div id="canvas-3d"></div>
+
+    <!-- Importation de Three.js via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Script pour générer la scène 3D -->
+    <script>
+        // 1. Création de la scène et de la caméra (Perspective)
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5; // On recule la caméra pour voir l'objet
+
+        // 2. Initialisation du moteur de rendu (WebGL)
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-3d').appendChild(renderer.domElement);
+
+        // 3. Création de la géométrie : Un nœud torique (Torus Knot)
+        // Parfait pour représenter la topologie !
+        const geometry = new THREE.TorusKnotGeometry(1.5, 0.4, 128, 16);
+        
+        // 4. Création du matériau (Aspect "fil de fer" type blueprint)
+        const material = new THREE.MeshBasicMaterial({ 
+            color: 0x45a29e, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.6
+        });
+        
+        // 5. Assemblage et ajout à la scène
+        const torusKnot = new THREE.Mesh(geometry, material);
+        scene.add(torusKnot);
+
+        // 6. Boucle d'animation
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotation lente sur les axes X et Y
+            torusKnot.rotation.x += 0.003;
+            torusKnot.rotation.y += 0.004;
+
+            renderer.render(scene, camera);
+        }
+
+        // 7. Ajustement si l'utilisateur redimensionne sa fenêtre
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+
+        // Lancement !
+        animate();
+    </script>
+
+    <script>
+    const canvas = document.getElementById('pluie-maths');
+    const ctx = canvas.getContext('2d');
+
+    // Ajuster au redimensionnement
+    function redimensionner() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', redimensionner);
+    redimensionner();
+
+    // Moins de symboles et plus épurés
+    const symboles = "∑∫∞π∇∂∀∃∈⊂∪∩≈≠≤≥αβγδεθλμσφω".split("");
+    const nbParticules = 35; // Seulement 35 symboles à l'écran !
+    const particules = [];
+
+    // Création des particules en 3D (X, Y et Z pour la profondeur)
+    for (let i = 0; i < nbParticules; i++) {
+        particules.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            z: Math.random() * 3 + 1, // Profondeur entre 1 (proche) et 4 (loin)
+            vitesse: Math.random() * 0.3 + 0.1, // Vitesse de base très lente
+            symbole: symboles[Math.floor(Math.random() * symboles.length)]
+        });
+    }
+
+    function animer3D() {
+        // On efface complètement l'image précédente (supprime le vertige)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particules.forEach(p => {
+            // Calcul de la 3D : plus l'objet est loin (z grand), plus il est petit, lent et transparent
+            const taille = 50 / p.z; 
+            const opacite = 1 / p.z;
+            const vitesseReelle = p.vitesse / (p.z * 0.5);
+
+            // Dessin du symbole
+            ctx.fillStyle = `rgba(102, 252, 241, ${opacite * 0.5})`; // Bleu néon adouci
+            ctx.font = `${taille}px 'Segoe UI', sans-serif`;
+            
+            // Effet de lueur douce
+            ctx.shadowColor = 'rgba(69, 162, 158, 0.5)';
+            ctx.shadowBlur = 15 / p.z;
+
+            ctx.fillText(p.symbole, p.x, p.y);
+
+            // Faire descendre doucement
+            p.y += vitesseReelle;
+
+            // Rotation douce de l'effet de profondeur en réinitialisant
+            if (p.y > canvas.height + taille) {
+                p.y = -taille;
+                p.x = Math.random() * canvas.width;
+                p.z = Math.random() * 3 + 1; // Change de profondeur en réapparaissant
+                p.symbole = symboles[Math.floor(Math.random() * symboles.length)];
+            }
+        });
+
+        // Utilise la fluidité native du navigateur (60 FPS constants)
+        requestAnimationFrame(animer3D);
+    }
+
+    // Lancement de l'animation
+    animer3D();
+</script>
+</body>
+</html>

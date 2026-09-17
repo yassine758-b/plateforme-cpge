@@ -1,0 +1,519 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ressources - Mathématiques CPGE</title>
+    <style>
+        /* Fond de page sombre assorti à la 3D */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh; /* Permet de centrer verticalement */
+        }
+
+        /* NOUVEAU : La barre d'en-tête qui contient les deux images */
+        .header-images {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between; /* Pousse la photo à gauche et le logo à droite */
+            align-items: flex-start;
+            box-sizing: border-box;
+            z-index: 20; /* S'assure que les images sont au-dessus de la 3D */
+            pointer-events: none; 
+        }
+
+        /* Style pour la photo du professeur */
+        .photo-prof {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%; /* Rend l'image parfaitement ronde */
+            object-fit: cover;
+            border: 3px solid #45a29e;
+            box-shadow: 0 0 15px rgba(69, 162, 158, 0.4);
+        }
+
+        /* Style pour le logo des classes préparatoires */
+        .logo-cpge {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(102, 252, 241, 0.3)); /* Ajoute un léger halo néon */
+        }
+
+        /* Le bloc central */
+        .container {
+            background-color: #1f2833;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            position: relative; /* <-- Ajout indispensable */
+            z-index: 10;
+        }
+
+        h1 { color: #66fcf1; margin-bottom: 30px; font-size: 2rem; }
+        
+        /* Les gros boutons de sélection */
+        .btn-choix {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            background-color: #45a29e;
+            color: #0b0c10;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-choix:hover { 
+            background-color: #66fcf1; 
+            box-shadow: 0 0 15px #66fcf1; 
+            transform: scale(1.02);
+        }
+        
+        /* Bouton retour */
+        .btn-retour {
+            background-color: transparent;
+            color: #c5c6c7;
+            border: 1px solid #c5c6c7;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: none; /* Caché au démarrage */
+            float: left;
+        }
+        .btn-retour:hover { background-color: #c5c6c7; color: #0b0c10; }
+
+        /* Gestion de l'affichage des étapes */
+        .step { display: none; clear: both; }
+        .step.active { display: block; animation: fadeIn 0.5s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Style des documents finaux */
+        .doc-item {
+            background-color: #0b0c10;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #66fcf1;
+            text-align: left;
+        }
+        .doc-item h4 { margin: 0 0 5px 0; color: #45a29e; }
+        .doc-item p { margin: 0 0 15px 0; font-size: 1.1rem; color: #fff; }
+        .doc-item a {
+            background-color: #45a29e;
+            color: #0b0c10;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .doc-item a:hover { background-color: #66fcf1; }
+        .empty-msg { color: #ff6b6b; font-style: italic; margin-top: 20px; display: none;}
+
+        /* Style de la barre de recherche */
+.search-container {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+#barre-recherche {
+    width: 90%;
+    padding: 15px 20px;
+    border-radius: 30px;
+    border: 2px solid #45a29e;
+    background-color: #0b0c10;
+    color: #c5c6c7;
+    font-size: 1.1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#barre-recherche:focus {
+    border-color: #66fcf1;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
+}
+
+#barre-recherche::placeholder {
+    color: #45a29e;
+    opacity: 0.7;
+}
+
+/* Style du bouton retour à l'accueil 3D */
+.btn-accueil {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Espace entre l'icône et le texte */
+    color: #45a29e;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 20px;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* Le trait de soulignement invisible par défaut */
+.btn-accueil::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: #66fcf1;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+}
+
+/* L'animation au survol de la souris */
+.btn-accueil:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+.btn-accueil:hover {
+    color: #66fcf1;
+}
+
+/* Style pour le bouton Espace Abonné / Mon Profil */
+.btn-auth {
+    display: inline-block;
+    padding: 8px 20px;
+    border: 2px solid #45a29e;
+    border-radius: 8px;
+    color: #45a29e;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-bottom: 40px;
+}
+
+.btn-auth:hover {
+    border-color: #66fcf1;
+    color: #0b0c10;
+    background-color: #66fcf1;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
+}
+
+#pluie-maths {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0; /* Place l'animation derrière tout le reste */
+    opacity: 10; /* Rend la pluie un peu transparente pour ne pas gêner la lecture */
+    pointer-events: none; /* Empêche la pluie de bloquer les clics de la souris */
+}
+    </style>
+</head>
+<body>
+    <canvas id="pluie-maths"></canvas>
+
+    <!-- NOUVEAU : Affichage des images -->
+    <div class="header-images">
+        <img src="{% static 'images/photo_prof.jpg' %}" alt="Professeur de Mathématiques" class="photo-prof">
+        <img src="{% static 'images/logo_cpge.png' %}" alt="Logo CPGE" class="logo-cpge">
+    </div>
+    <div class="container">
+        <div class="container">
+            <div style="text-align: right; margin-bottom: 20px;">
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'profil' %}" class="btn-auth">👤 Mon Profil ({{ request.user.username }})</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn-auth">🔒 Espace Abonné</a>
+        {% endif %}
+    </div>
+    
+    <!-- NOUVEAU : La barre de recherche globale -->
+    <div class="search-container">
+        <input type="text" id="barre-recherche" placeholder="🔍 Chercher un chapitre (ex: Topologie, CNC 2024)..." onkeyup="rechercher()">
+    </div>
+
+    <!-- Le bouton retour reste ici -->
+    <button class="btn-retour" id="btn-retour" onclick="etapePrecedente()">← Retour</button>
+    
+    <!-- ... Reste du code (Étape 1, 2, 3) ... -->
+        <!-- Bouton pour revenir en arrière -->
+        <button class="btn-retour" id="btn-retour" onclick="etapePrecedente()">← Retour</button>
+        
+        <!-- ÉTAPE 1 : Choix du Niveau -->
+        <div id="etape-1" class="step active">
+            <h1>Sélectionnez votre Niveau</h1>
+            {% for niveau in niveaux %}
+                <button class="btn-choix" onclick="choisirNiveau('{{ niveau.id }}')">{{ niveau.nom }}</button>
+            {% empty %}
+                <p>Aucun niveau n'a encore été configuré.</p>
+            {% endfor %}
+            <br>
+           
+  <a href="{% url 'accueil' %}" class="btn-accueil">
+    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+    </svg>
+    Retour à l'accueil 
+  </a>
+        </div>
+
+        <!-- ÉTAPE 2 : Choix de la Catégorie -->
+        <div id="etape-2" class="step">
+            <h1>Que recherchez-vous ?</h1>
+            <button class="btn-choix" onclick="choisirType('COURS')">📚 Cours</button>
+            <button class="btn-choix" onclick="choisirType('RES')">📝 Résumé</button>
+            <button class="btn-choix" onclick="choisirType('DS')">✍️ Devoir Surveillé</button>
+            <button class="btn-choix" onclick="choisirType('CNC')">🏆 Sujet CNC</button>
+            <button class="btn-choix" onclick="choisirType('DL')">🏠 Devoir Libre</button>
+            <button class="btn-choix" onclick="choisirType('EXO')">✅ Exercice Corrigé</button>
+        </div>
+
+        <!-- ÉTAPE 3 : Affichage des Documents -->
+        <div id="etape-3" class="step">
+            <h1>Documents disponibles</h1>
+            <div id="liste-documents">
+                
+                <!-- Django charge tous les documents de la base de données ici. 
+                     Ils sont cachés par défaut, le JavaScript les affichera selon le choix -->
+                {% for niveau in niveaux %}
+                    {% for chapitre in niveau.chapitres.all %}
+                        {% for doc in chapitre.documents.all %}
+                           {% for doc in chapitre.documents.all %}
+    {% if doc.est_publie %}
+        <div class="doc-item document-data" 
+             data-niveau="{{ niveau.id }}" 
+             data-type="{{ doc.type_document }}">
+            <h4>Chapitre : {{ chapitre.titre }}</h4>
+            <p>{{ doc.titre }}</p>
+            
+            <!-- LOGIQUE D'ACCÈS PUBLIC / PRIVÉ -->
+            {% if not doc.est_prive or request.user.is_authenticated %}
+                <!-- Si le document est public OU si l'élève a un compte -->
+                <a href="{{ doc.fichier.url }}" target="_blank">📥 Ouvrir le PDF</a>
+            {% else %}
+                <!-- Si le document est privé ET que l'élève n'est pas connecté -->
+                <a href="{% url 'login' %}" style="background-color: #ff6b6b; color: white;">
+                    🔒 Connexion requise
+                </a>
+            {% endif %}
+            
+        </div>
+    {% endif %}
+{% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+                
+                <p id="msg-vide" class="empty-msg">Le professeur n'a pas encore ajouté de document dans cette catégorie pour ce niveau.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de logique d'interface -->
+    <script>
+        let niveauActuel = "";
+        let typeActuel = "";
+        let etapeCourante = 1;
+
+        const etape1 = document.getElementById('etape-1');
+        const etape2 = document.getElementById('etape-2');
+        const etape3 = document.getElementById('etape-3');
+        const btnRetour = document.getElementById('btn-retour');
+        const documents = document.querySelectorAll('.document-data');
+        const msgVide = document.getElementById('msg-vide');
+
+        function choisirNiveau(id) {
+            niveauActuel = id;
+            changerEtape(etape1, etape2);
+            btnRetour.style.display = "block";
+            etapeCourante = 2;
+        }
+
+        function choisirType(type) {
+            typeActuel = type;
+            changerEtape(etape2, etape3);
+            etapeCourante = 3;
+            filtrerDocuments();
+        }
+
+        function filtrerDocuments() {
+            let nbDocumentsTrouves = 0;
+            
+            // On parcourt tous les documents générés par Django
+            documents.forEach(doc => {
+                const docNiveau = doc.getAttribute('data-niveau');
+                const docType = doc.getAttribute('data-type');
+                
+                // Si le document correspond aux deux choix, on l'affiche, sinon on le cache
+                if (docNiveau === niveauActuel && docType === typeActuel) {
+                    doc.style.display = "block";
+                    nbDocumentsTrouves++;
+                } else {
+                    doc.style.display = "none";
+                }
+            });
+
+            // Afficher un message si la liste est vide
+            msgVide.style.display = (nbDocumentsTrouves === 0) ? "block" : "none";
+        }
+
+        function etapePrecedente() {
+            if (etapeCourante === 3) {
+                changerEtape(etape3, etape2);
+                etapeCourante = 2;
+            } else if (etapeCourante === 2) {
+                changerEtape(etape2, etape1);
+                btnRetour.style.display = "none";
+                etapeCourante = 1;
+            }
+        }
+
+        function changerEtape(etapeActuelle, nouvelleEtape) {
+            etapeActuelle.classList.remove('active');
+            nouvelleEtape.classList.add('active');
+        }
+
+        // On récupère la barre de recherche
+const barreRecherche = document.getElementById('barre-recherche');
+
+function rechercher() {
+    const requete = barreRecherche.value.toLowerCase();
+    
+    if (requete.length > 0) {
+        // Mode recherche active : on masque les menus et on affiche directement les résultats
+        etape1.style.display = 'none';
+        etape2.style.display = 'none';
+        etape3.style.display = 'block';
+        btnRetour.style.display = 'none';
+        
+        let nbTrouves = 0;
+        documents.forEach(doc => {
+            // On récupère tout le texte du bloc document (Chapitre + Titre)
+            const texte = doc.innerText.toLowerCase();
+            
+            if (texte.includes(requete)) {
+                doc.style.display = "block"; // Ça matche, on affiche !
+                nbTrouves++;
+            } else {
+                doc.style.display = "none";  // Ça ne matche pas, on cache.
+            }
+        });
+
+        // Gestion du message si on ne trouve rien
+        msgVide.style.display = (nbTrouves === 0) ? "block" : "none";
+        msgVide.innerText = "Aucun document ne correspond à cette recherche.";
+        
+    } else {
+        // Mode normal : l'élève a effacé sa recherche, on restaure l'affichage initial
+        msgVide.innerText = "Le professeur n'a pas encore ajouté de document dans cette catégorie pour ce niveau.";
+        
+        // On remet l'affichage en fonction de l'étape où l'utilisateur se trouvait
+        etape1.style.display = (etapeCourante === 1) ? 'block' : 'none';
+        etape2.style.display = (etapeCourante === 2) ? 'block' : 'none';
+        etape3.style.display = (etapeCourante === 3) ? 'block' : 'none';
+        btnRetour.style.display = (etapeCourante !== 1) ? 'block' : 'none';
+        
+        // Si on était déjà à l'étape 3 avant la recherche, on refiltre correctement
+        if (etapeCourante === 3) filtrerDocuments(); 
+    }
+}
+
+
+   
+
+    </script>
+
+    <script>
+    const canvas = document.getElementById('pluie-maths');
+    const ctx = canvas.getContext('2d');
+
+    // Ajuster au redimensionnement
+    function redimensionner() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', redimensionner);
+    redimensionner();
+
+    // Moins de symboles et plus épurés
+    const symboles = "∑∫∞π∇∂∀∃∈⊂∪∩≈≠≤≥αβγδεθλμσφω".split("");
+    const nbParticules = 35; // Seulement 35 symboles à l'écran !
+    const particules = [];
+
+    // Création des particules en 3D (X, Y et Z pour la profondeur)
+    for (let i = 0; i < nbParticules; i++) {
+        particules.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            z: Math.random() * 3 + 1, // Profondeur entre 1 (proche) et 4 (loin)
+            vitesse: Math.random() * 0.3 + 0.1, // Vitesse de base très lente
+            symbole: symboles[Math.floor(Math.random() * symboles.length)]
+        });
+    }
+
+    function animer3D() {
+        // On efface complètement l'image précédente (supprime le vertige)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particules.forEach(p => {
+            // Calcul de la 3D : plus l'objet est loin (z grand), plus il est petit, lent et transparent
+            const taille = 50 / p.z; 
+            const opacite = 1 / p.z;
+            const vitesseReelle = p.vitesse / (p.z * 0.5);
+
+            // Dessin du symbole
+            ctx.fillStyle = `rgba(102, 252, 241, ${opacite * 0.5})`; // Bleu néon adouci
+            ctx.font = `${taille}px 'Segoe UI', sans-serif`;
+            
+            // Effet de lueur douce
+            ctx.shadowColor = 'rgba(69, 162, 158, 0.5)';
+            ctx.shadowBlur = 15 / p.z;
+
+            ctx.fillText(p.symbole, p.x, p.y);
+
+            // Faire descendre doucement
+            p.y += vitesseReelle;
+
+            // Rotation douce de l'effet de profondeur en réinitialisant
+            if (p.y > canvas.height + taille) {
+                p.y = -taille;
+                p.x = Math.random() * canvas.width;
+                p.z = Math.random() * 3 + 1; // Change de profondeur en réapparaissant
+                p.symbole = symboles[Math.floor(Math.random() * symboles.length)];
+            }
+        });
+
+        // Utilise la fluidité native du navigateur (60 FPS constants)
+        requestAnimationFrame(animer3D);
+    }
+
+    // Lancement de l'animation
+    animer3D();
+</script>
+
+</body>
+<!-- Toile de fond pour la pluie de mathématiques -->
+
+</html>

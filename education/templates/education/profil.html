@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - Mathématiques CPGE</title>
+    <style>
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* NOUVEAU : La barre d'en-tête qui contient les deux images */
+        .header-images {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between; /* Pousse la photo à gauche et le logo à droite */
+            align-items: flex-start;
+            box-sizing: border-box;
+            z-index: 20; /* S'assure que les images sont au-dessus de la 3D */
+            pointer-events: none; 
+        }
+
+        /* Style pour la photo du professeur */
+        .photo-prof {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%; /* Rend l'image parfaitement ronde */
+            object-fit: cover;
+            border: 3px solid #45a29e;
+            box-shadow: 0 0 15px rgba(69, 162, 158, 0.4);
+        }
+
+        /* Style pour le logo des classes préparatoires */
+        .logo-cpge {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(102, 252, 241, 0.3)); /* Ajoute un léger halo néon */
+        }
+
+        .profil-container {
+            background-color: #1f2833;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 { color: #66fcf1; font-size: 2.5rem; margin-bottom: 5px; }
+        .statut { color: #45a29e; font-size: 1.2rem; margin-bottom: 30px; font-weight: bold; }
+        .stats-box {
+            background-color: #0b0c10;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #66fcf1;
+        }
+        .stats-box p { margin: 0; font-size: 1.1rem; }
+        
+        .btn-action {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+            border: none;
+        }
+        .btn-cours { background-color: #45a29e; color: #0b0c10; }
+        .btn-cours:hover { background-color: #66fcf1; }
+        
+        .btn-logout { background-color: transparent; color: #ff6b6b; border: 2px solid #ff6b6b; }
+        .btn-logout:hover { background-color: #ff6b6b; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- NOUVEAU : Affichage des images -->
+    <div class="header-images">
+        <img src="{% static 'images/photo_prof.jpg' %}" alt="Professeur de Mathématiques" class="photo-prof">
+        <img src="{% static 'images/logo_cpge.png' %}" alt="Logo CPGE" class="logo-cpge">
+    </div>
+    <div class="profil-container">
+        <!-- request.user.username affiche le pseudo de l'élève connecté -->
+        <h1>{{ request.user.username }}</h1>
+        <p class="statut">🎓 Élève Abonné</p>
+
+        <div class="stats-box">
+            <p><strong>{{ nb_docs_prives }}</strong> documents premium débloqués et prêts pour tes révisions.</p>
+        </div>
+
+        <a href="{% url 'liste_cours' %}" class="btn-action btn-cours">← Retour aux cours</a>
+
+        <!-- Formulaire de déconnexion sécurisé Django -->
+        <form action="{% url 'logout' %}" method="post" style="margin-top: 15px;">
+            {% csrf_token %}
+            <button type="submit" class="btn-action btn-logout">Se déconnecter</button>
+        </form>
+    </div>
+
+</body>
+</html>
