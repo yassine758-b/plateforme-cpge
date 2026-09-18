@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Niveau, Chapitre, Document
+from .models import ProfilEleve
 
 class DocumentAdmin(admin.ModelAdmin):
     # On ajoute 'est_publie' dans l'affichage
@@ -21,3 +22,10 @@ class ChapitreAdmin(admin.ModelAdmin):
 admin.site.register(Niveau)
 admin.site.register(Chapitre, ChapitreAdmin)
 admin.site.register(Document, DocumentAdmin)
+
+@admin.register(ProfilEleve)
+class ProfilEleveAdmin(admin.ModelAdmin):
+    list_display = ('user', 'est_premium', 'date_fin_abonnement')
+    list_filter = ('est_premium',)
+    search_fields = ('user__username',)
+    list_editable = ('est_premium',) # Permet au prof de cocher la case directement depuis la liste !

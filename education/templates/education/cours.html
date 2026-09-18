@@ -309,7 +309,7 @@
             <p>{{ doc.titre }}</p>
             
             <!-- LOGIQUE D'ACCÈS PUBLIC / PRIVÉ -->
-            {% if not doc.est_prive or request.user.is_authenticated %}
+            {% if not doc.est_prive or request.user.profil.est_premium %}
                 <!-- Si le document est public OU si l'élève a un compte -->
                 <a href="{{ doc.fichier.url }}" target="_blank">📥 Ouvrir le PDF</a>
             {% else %}
@@ -317,6 +317,8 @@
                 <a href="{% url 'login' %}" style="background-color: #ff6b6b; color: white;">
                     🔒 Connexion requise
                 </a>
+                <!-- À remplacer dans cours.html -->
+                <a href="{% url 'abonnement' %}" class="btn-lock">🔒 Débloquer (Premium)</a>
             {% endif %}
             
         </div>

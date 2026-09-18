@@ -4,5 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.accueil, name='accueil'),
     path('cours/', views.liste_cours, name='liste_cours'),
-     path('profil/', views.profil, name='profil'), # <-- NOUVELLE LIGNE
+    path('profil/', views.profil, name='profil'), # <-- NOUVELLE LIGNE
+    path('inscription/', views.inscription, name='inscription'),
+    path('abonnement/', views.page_abonnement, name='abonnement')
 ]

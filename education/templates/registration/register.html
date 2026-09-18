@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscription - Plateforme CPGE</title>
+    <style>
+        /* On reprend le même design sombre que le login */
+        body { background-color: #0b0c10; color: #c5c6c7; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background-color: #1f2833; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 400px; }
+        h2 { color: #66fcf1; margin-bottom: 20px; }
+        .btn-action { width: 100%; padding: 12px; margin-top: 15px; background-color: #45a29e; color: #0b0c10; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-action:hover { background-color: #66fcf1; }
+        .link-retour { color: #45a29e; text-decoration: none; display: block; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Créer un compte gratuit</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-action">S'inscrire</button>
+        </form>
+        <a href="{% url 'login' %}" class="link-retour">Déjà un compte ? Se connecter</a>
+    </div>
+</body>
+</html>
