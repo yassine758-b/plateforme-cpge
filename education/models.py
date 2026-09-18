@@ -1,6 +1,7 @@
 from django.db import models
-
-
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 class Niveau(models.Model):
     nom = models.CharField(max_length=50) # ex: MPSI, PCSI, MP...
     
@@ -34,3 +35,25 @@ class Document(models.Model):
     
     def __str__(self):
         return f"[{self.get_type_document_display()}] {self.titre}"
+
+
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class ProfilEleve(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profil')
+    est_premium = models.BooleanField(default=False, verbose_name="Abonnement Premium Actif")
+    date_fin_abonnement = models.DateField(null=True, blank=True, verbose_name="Fin d'abonnement")
+
+    def __str__(self):
+        return f"Profil de {self.user.username} - {'Premium' if self.est_premium else 'Gratuit'}"
+
+@receiver(post_save, sender=User)
+def creer_profil_eleve(sender, instance, created, **kwargs):
+    if created:
+        ProfilEleve.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def sauvegarder_profil_eleve(sender, instance, **kwargs):
+    instance.profil.save()

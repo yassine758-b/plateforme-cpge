@@ -4,135 +4,150 @@
     <meta charset="UTF-8">
     <title>Connexion - Plateforme CPGE</title>
     <style>
-        body { background-color: #0b0c10; color: #c5c6c7; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background-color: #1f2833; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 400px; }
-        h2 { color: #66fcf1; margin-bottom: 30px; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #45a29e; background-color: #0b0c10; color: #fff; outline: none; }
-        input:focus { border-color: #66fcf1; box-shadow: 0 0 10px rgba(102, 252, 241, 0.3); }
-        .btn-login { width: 100%; padding: 12px; margin-top: 20px; background-color: #45a29e; color: #0b0c10; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-login:hover { background-color: #66fcf1; }
-        .error { color: #ff6b6b; font-size: 0.9em; margin-bottom: 15px; }
-
-        #pluie-maths {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 0; /* Place l'animation derrière tout le reste */
-    opacity: 10; /* Rend la pluie un peu transparente pour ne pas gêner la lecture */
-    pointer-events: none; /* Empêche la pluie de bloquer les clics de la souris */
-}
-
-/* Style du nouveau bouton retour */
-        .btn-retour {
-            display: block;
-            text-align: center;
-            color: #45a29e;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.95rem;
-            margin-bottom: 10px;
-            transition: color 0.3s ease;
-            margin-top: 30px;
+        /* Reset de base pour éviter les marges par défaut des navigateurs */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background-color: #0b0c10; 
+            color: #c5c6c7; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: flex-end; /* Aligne le panneau à droite */
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; /* Empêche l'apparition de barres de défilement */
         }
 
+        /* Panneau de connexion */
+        .login-sidebar { 
+            background-color: #1f2833; 
+            width: 100%; 
+            max-width: 400px; 
+            height: 100vh;
+            padding: 50px 40px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5); 
+        }
         
+        h2 { 
+            color: #66fcf1; 
+            margin-bottom: 30px; 
+            text-align: center;
+            font-size: 2.2rem;
+        }
+        
+        /* Structure du formulaire */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Espace identique entre chaque champ */
+        }
 
-        .btn-retour:hover { color: #66fcf1; text-shadow: 0 0 8px rgba(102, 252, 241, 0.4); }
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #45a29e; 
+            background-color: #0b0c10; 
+            color: #fff; 
+            outline: none; 
+            font-size: 1rem;
+        }
+        input:focus { 
+            border-color: #66fcf1; 
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.3); 
+        }
+        
+        .btn-login { 
+            width: 100%; 
+            padding: 15px; 
+            background-color: #45a29e; 
+            color: #0b0c10; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            margin-top: 10px;
+        }
+        .btn-login:hover { background-color: #66fcf1; }
+
+        /* Correction du lien violet "Retour aux cours" */
+        .link-retour { 
+            text-align: center; 
+            color: #45a29e; /* Force la couleur néon */
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+            margin-top: 20px; 
+            transition: 0.3s; 
+        }
+        /* Appliqué même si le lien a déjà été visité */
+        .link-retour:visited { color: #45a29e; }
+        .link-retour:hover { 
+            color: #66fcf1; 
+            text-shadow: 0 0 8px rgba(102, 252, 241, 0.4); 
+        }
+
+        /* Section Inscription */
+        .separation { 
+            border-top: 1px solid #45a29e; 
+            margin: 40px 0 20px 0; 
+            opacity: 0.3; 
+        }
+        .texte-nouveau { 
+            text-align: center; 
+            font-size: 0.9rem; 
+            color: #c5c6c7; 
+            margin-bottom: 15px; 
+        }
+        
+        /* Bouton fantôme pour l'inscription */
+        .link-inscription { 
+            display: block; 
+            width: 100%; 
+            padding: 12px; 
+            text-align: center; 
+            border: 2px solid #45a29e; 
+            border-radius: 8px; 
+            color: #66fcf1; 
+            text-decoration: none; 
+            font-weight: bold; 
+            transition: all 0.3s ease; 
+        }
+        .link-inscription:visited { color: #66fcf1; }
+        .link-inscription:hover { 
+            background-color: #45a29e; 
+            color: #0b0c10; 
+            box-shadow: 0 0 15px rgba(102, 252, 241, 0.4); 
+        }
     </style>
 </head>
 <body>
+    <!-- Le fond animé avec les symboles mathématiques reste géré par ton canvas Three.js s'il est inclus -->
 
-   
-    <!-- Toile de fond pour la pluie de mathématiques -->
-<canvas id="pluie-maths"></canvas>
-
-
-    <div class="login-box">
+    <div class="login-sidebar">
         <h2>Accès Élèves</h2>
+        
         {% if form.errors %}
-            <div class="error">Identifiant ou mot de passe incorrect.</div>
+            <div style="color: #ff6b6b; text-align: center; margin-bottom: 15px;">Identifiant ou mot de passe incorrect.</div>
         {% endif %}
+        
         <form method="post">
             {% csrf_token %}
             <input type="text" name="username" placeholder="Identifiant" required>
             <input type="password" name="password" placeholder="Mot de passe" required>
             <button type="submit" class="btn-login">Se connecter</button>
-            <!-- NOUVEAU : Bouton de retour vers les cours -->
-            <a href="{% url 'liste_cours' %}" class="btn-retour">← Retour aux cours</a>
-        </form>     
-        
+        </form>
+
+        <a href="{% url 'liste_cours' %}" class="link-retour">← Retour aux cours</a>
+
+        <div class="separation"></div>
+        <p class="texte-nouveau">Nouveau sur la plateforme ?</p>
+        <a href="{% url 'inscription' %}" class="link-inscription">Créer un compte gratuitement</a>
     </div>
-
-    <script>
-    const canvas = document.getElementById('pluie-maths');
-    const ctx = canvas.getContext('2d');
-
-    // Ajuster au redimensionnement
-    function redimensionner() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', redimensionner);
-    redimensionner();
-
-    // Moins de symboles et plus épurés
-    const symboles = "∑∫∞π∇∂∀∃∈⊂∪∩≈≠≤≥αβγδεθλμσφω".split("");
-    const nbParticules = 35; // Seulement 35 symboles à l'écran !
-    const particules = [];
-
-    // Création des particules en 3D (X, Y et Z pour la profondeur)
-    for (let i = 0; i < nbParticules; i++) {
-        particules.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            z: Math.random() * 3 + 1, // Profondeur entre 1 (proche) et 4 (loin)
-            vitesse: Math.random() * 0.3 + 0.1, // Vitesse de base très lente
-            symbole: symboles[Math.floor(Math.random() * symboles.length)]
-        });
-    }
-
-    function animer3D() {
-        // On efface complètement l'image précédente (supprime le vertige)
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        particules.forEach(p => {
-            // Calcul de la 3D : plus l'objet est loin (z grand), plus il est petit, lent et transparent
-            const taille = 50 / p.z; 
-            const opacite = 1 / p.z;
-            const vitesseReelle = p.vitesse / (p.z * 0.5);
-
-            // Dessin du symbole
-            ctx.fillStyle = `rgba(102, 252, 241, ${opacite * 0.5})`; // Bleu néon adouci
-            ctx.font = `${taille}px 'Segoe UI', sans-serif`;
-            
-            // Effet de lueur douce
-            ctx.shadowColor = 'rgba(69, 162, 158, 0.5)';
-            ctx.shadowBlur = 15 / p.z;
-
-            ctx.fillText(p.symbole, p.x, p.y);
-
-            // Faire descendre doucement
-            p.y += vitesseReelle;
-
-            // Rotation douce de l'effet de profondeur en réinitialisant
-            if (p.y > canvas.height + taille) {
-                p.y = -taille;
-                p.x = Math.random() * canvas.width;
-                p.z = Math.random() * 3 + 1; // Change de profondeur en réapparaissant
-                p.symbole = symboles[Math.floor(Math.random() * symboles.length)];
-            }
-        });
-
-        // Utilise la fluidité native du navigateur (60 FPS constants)
-        requestAnimationFrame(animer3D);
-    }
-
-    // Lancement de l'animation
-    animer3D();
-</script>
-
-
 </body>
 </html>
